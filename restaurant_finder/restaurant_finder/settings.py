@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH', r'C:\Users\patri\anaconda3\anaconda\envs\awm_env\Library\bin\gdal.dll')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +35,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.gis',
+    'leaflet',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -76,8 +80,14 @@ WSGI_APPLICATION = 'restaurant_finder.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    'NAME': 'gis',
+    'HOST': 'localhost',
+    'USER': 'docker',
+    'PASSWORD': 'docker',
+    'PORT': 25432
+
     }
 }
 
