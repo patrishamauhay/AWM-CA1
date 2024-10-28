@@ -3,5 +3,5 @@
 Patrisha Mauhay - C21339643 
 TU857/4
 
-**Restaurant Finder**
+Restaurant Finder
 Location Based Service (LBS) Application to locate restaurants nearby.
