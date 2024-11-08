@@ -83,7 +83,7 @@ DATABASES = {
 
     'ENGINE': 'django.contrib.gis.db.backends.postgis',
     'NAME': 'gis',
-    'HOST': '0.0.0.0',
+    'HOST': 'localhost',
     'USER': 'docker',
     'PASSWORD': 'docker',
     'PORT': 25432,
