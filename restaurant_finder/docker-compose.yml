@@ -1,83 +1,62 @@
 services:
 
   nginx:
-
-    image: nginx-image
-
+    image: nginx
     ports:
-
       - "80:80"
-
     volumes:
-
       - ./nginx/conf.d:/etc/nginx/conf.d
-
     depends_on:
-
       - pgadmin4
-
       - postgis
-
       - awm_django_app
+    networks:
+      - awm2024 
 
- 
 
   pgadmin4:
-
     image: dpage/pgadmin4
-
     ports:
-
       - "20080:80"
-
     environment:
-
       PGADMIN_DEFAULT_EMAIL: admin@tudublin.ie
-
       PGADMIN_DEFAULT_PASSWORD: password
+    networks:
+      - awm2024
 
     #volumes:
-
     #  - my_pgadmin4_data:/var/lib/postgresql/data
 
  
 
   postgis:
-
     image: kartoza/postgis
-
     ports:
-
       - 25432:5432
-
     environment:
-
       POSTGRES_PASSWORD: docker
-
       POSTGRES_DB: gis
-
+    networks:
+      - awm2024
     #volumes:
-
     #  - my_first_spatialdb_data:/var/lib/postgresql/data
 
  
 
   awm_django_app:
-
-    image: awmproject
-
+    image: restaurant_finder
     ports:
-
       - 8001:8001
 
     #build: .
-
-    command: python manage.py runserver 0.0.0.0:8001
-
+    command: /bin/bash -c "conda activate awm_env && python manage.py runserver 0.0.0.0:8001"
     volumes:
-
       - .:/app
-
     depends_on:
-
       - postgis
+    networks:
+      - awm2024
+
+networks:
+  awm2024:
+    external: true   
