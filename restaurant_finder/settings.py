@@ -12,15 +12,12 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
-import django_heroku
 
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH', r'C:\Users\patri\anaconda3\anaconda\envs\awm_env\Library\bin\gdal.dll')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-django_heroku.settings(locals())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -29,9 +26,9 @@ django_heroku.settings(locals())
 SECRET_KEY = 'django-insecure-+j6x&*5k8r=dvdmez8fee3ei4q!v*x98si)v_0g(t^jyi*n1^$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['']
 
 
 # Application definition
@@ -60,7 +57,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 
 ]
 
@@ -88,27 +84,18 @@ WSGI_APPLICATION = 'restaurant_finder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://docker:docker@localhost:25432/gis',  # Default for local development
-        conn_max_age=600,
-        ssl_require=True  # SSL connection required for Heroku PostgreSQL
-    )
-}
+    'default': {
 
-# Local fallback for PostGIS database (if no DATABASE_URL on Heroku)
-if not dj_database_url.config():
-    DATABASES['default'] = {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'gis',
-        'HOST': 'localhost',
-        'USER': 'docker',
-        'PASSWORD': 'docker',
-        'PORT': 25432,
+    'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    'NAME': 'gis',
+    'HOST': 'localhost',
+    'USER': 'docker',
+    'PASSWORD': 'docker',
+    'PORT': 25432,
+
     }
-
+}
 
 
 # Password validation
@@ -147,12 +134,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# Automatically collect static files for Heroku
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Serve static files efficiently with WhiteNoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Allow All Hosts (for Heroku)
 ALLOWED_HOSTS = ['*']

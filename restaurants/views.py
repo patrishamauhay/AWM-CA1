@@ -12,9 +12,18 @@ from .serializers import RestaurantSerializer
 @login_required
 def add_to_favorites(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-    if restaurant not in request.user.favorite_restaurants.all():
+    
+    # Check if the restaurant is already in the user's favorites
+    if restaurant in request.user.favorite_restaurants.all():
+        # Remove from favorites
+        request.user.favorite_restaurants.remove(restaurant)
+    else:
+        # Add to favorites
         request.user.favorite_restaurants.add(restaurant)
-    return redirect('restaurant-list')  
+    
+    # Redirect to the page where the user was
+    return redirect(request.META.get('HTTP_REFERER', 'restaurant-list'))
+ 
 
 @login_required
 def view_favorites(request):

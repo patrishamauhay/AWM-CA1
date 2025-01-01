@@ -10,15 +10,19 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
 
     <style>
         body {
             background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         .navbar {
             background-color: #343a40;
+            padding: 10px 20px;
         }
 
         .navbar-brand {
@@ -31,15 +35,30 @@
         }
 
         .search-section {
-            padding: 60px 0;
+            padding: 40px;
             background-color: #ffffff;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
+        }
+
+        #map {
+            height: 350px;
+            width: 100%;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .results-section {
             margin-top: 40px;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
         }
 
         .card {
@@ -47,11 +66,13 @@
             border: none;
             border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+
         }
 
         .card:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .card-body {
@@ -61,7 +82,6 @@
         .card-title {
             font-size: 1.25rem;
             font-weight: bold;
-            
         }
 
         .card .btn {
@@ -76,34 +96,31 @@
             background-color: #0056b3;
         }
 
-        #map {
-            height: 350px;
-            width: 100%;
-            margin-top: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
         }
 
-        .footer {
-            background-color: #343a40;
-            color: white;
-            padding: 30px 0;
-            text-align: center;
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
         }
 
-        .footer .footer-links {
-            margin-bottom: 20px;
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .footer a {
-            color: white;
-            text-decoration: none;
-            margin: 0 10px;
+        .modal-header {
+            border-bottom: 1px solid #ddd;
         }
 
-        .footer a:hover {
-            text-decoration: underline;
+        .modal-footer {
+            border-top: 1px solid #ddd;
         }
+
+
+
         /* Responsive adjustments */
         @media (max-width: 767px) {
             .search-section {
@@ -119,7 +136,6 @@
             }
         }
     </style>
-
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('{% static "serviceworker.js" %}')
@@ -134,89 +150,99 @@
 </head>
 
 <body>
-    <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-<img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 40px; width: auto; margin-right: 10px;">
-                Restaurant Finder</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle btn btn-info text-white" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                My Account
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#profileModal">
-                                    My Profile
-                                </a>
-                                <a class="dropdown-item" href="{% url 'favorites' %}">
-                                    Favourites
-                                </a>
-                            </div>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-            
-        </div>
-    </nav>
-
+    <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <!-- Search Section -->
-        <div class="search-section text-center">
-            <h1>Find Your Favorite Restaurant</h1>
-            <p class="lead">Discover the best places to eat around you.</p>
-            <form method="get" id="search-form" class="mt-4">
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <input type="text" class="form-control" placeholder="Search by restaurant name..." name="search"
-                            id="search-input" value="{{ search_input }}" required>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <button type="submit" class="btn btn-primary btn-block">Search</button>
-                    </div>
-                </div>
-            </form>
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 40px; width: auto; margin-right: 10px;">
+            Restaurant Finder
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle btn btn-info text-white" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            My Account
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#profileModal">
+                                My Profile
+                            </a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#favoritesModal">
+                                Favourites
+                            </a>
+                            <a class="dropdown-item" href="#" style="color: red; font-weight: bold;" onmouseover="this.style.color='#8B0000'" onmouseout="this.style.color='red'">
+                                Logout
+                            </a>                            
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-
-        <!-- Map Section -->
-        <div id="map"></div>
-
-        <!-- Results Section -->
-        <!-- Results Section -->
-<div class="results-section" id="results">
-    {% if restaurants %}
-        <h2 class="text-center">Results</h2>
-        <ul class="list-group">
-            {% for restaurant in restaurants %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-1">{{ restaurant.name }}</h5>
-                        <small>{{ restaurant.address }}</small>
-                    </div>
-                    <a href="{% url 'add_to_favorites' restaurant.id %}" class="btn btn-secondary btn-sm">
-                        {% if restaurant in user.favorite_restaurants.all %}
-                            Remove from Favorites
-                        {% else %}
-                            Add to Favorites
-                        {% endif %}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="text-center">No results found.</p>
-    {% endif %}
-</div>
+    </div>
+</nav>
 
 
-      <!-- Footer -->
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="row w-100">
+            <div class="col-md-12">
+                <!-- Main Content -->
+                <div class="search-section text-center">
+                    <h1>Find Your Favorite Restaurant</h1>
+                    <p>Discover the best places to eat around you!</p>
+                    <form method="get" id="search-form" class="mt-4">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" placeholder="Search by restaurant name..." name="search" value="{{ search_input }}" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <button type="submit" class="btn btn-primary btn-block">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    
+                <!-- Map Section -->
+                <div id="map"></div>
+    
+                <!-- Results Section -->
+                <div class="results-section" id="results">
+                    {% if restaurants %}
+                        <h2 class="text-center mb-4">Results</h2>
+                        <div class="list-group">
+                            {% for restaurant in restaurants %}
+                                <div class="list-group-item list-group-item-action flex-column align-items-start shadow-sm mb-3 rounded">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-2 font-weight-bold">{{ restaurant.name }}</h5>
+                                        <a href="{% url 'add_to_favorites' restaurant.id %}" class="btn btn-outline-secondary btn-sm">
+                                            {% if restaurant in user.favorite_restaurants.all %}
+                                                Remove from Favorites
+                                            {% else %}
+                                                Add to Favorites
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <p class="mb-1 text-muted">{{ restaurant.address|default:"1234 Random Street, Sample City" }}</p>
+                                    <div class="mt-2">
+                                        <span class="text-primary font-weight-bold">Rating:</span> ⭐⭐⭐⭐☆
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center">No results found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Footer -->
     <div class="footer">
         <div class="footer-links">
             <a href="#">Privacy Policy</a> | 
@@ -249,6 +275,40 @@
         </div>
     </div>
 
+    <!-- Favourites Modal -->
+<div class="modal fade" id="favoritesModal" tabindex="-1" aria-labelledby="favoritesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="favoritesModalLabel">My Favourites</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% if user.favorite_restaurants.all %}
+                    <ul class="list-group">
+                        {% for restaurant in user.favorite_restaurants.all %}
+                            <li class="list-group-item">
+                                <h5 class="mb-1">{{ restaurant.name }}</h5>
+                                <p class="mb-1">{{ restaurant.address|default:"1234 Random Street, Sample City" }}</p>
+                                <span class="text-primary font-weight-bold">Rating:</span> ⭐⭐⭐⭐☆
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>You don't have any favorites yet.</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
@@ -260,13 +320,13 @@
             var map = L.map('map').setView(initialLocation, 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 70,
+                maxZoom: 19,
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
             {% for restaurant in restaurants %}
                 L.marker([{{ restaurant.latitude }}, {{ restaurant.longitude }}]).addTo(map)
-                    .bindPopup('<strong>{{ restaurant.name }}</strong><br>{{ restaurant.address }}');
+                    .bindPopup('<strong>{{ restaurant.name }}</strong><br>{{ restaurant.address|default:"1234 Random Street, Sample City" }}<br>⭐⭐⭐⭐☆');
             {% endfor %}
         });
     </script>
