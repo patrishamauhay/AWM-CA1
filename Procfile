@@ -1,1 +1,1 @@
-web: gunicorn restaurant_finder.wsgi
+web: gunicorn restaurant_finder.wsgi --log-file -
