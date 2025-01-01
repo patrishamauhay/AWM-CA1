@@ -1,16 +1,17 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db import models
-
+from django.contrib.auth.models import User
 
 # Defining Restaurants model
 class Restaurant(models.Model):
     name = models.CharField(max_length=100)
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, blank=True, null=True)  # Allow null and blank addresses
     description = models.TextField(blank=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     location = gis_models.PointField(geography=True, blank=True, null=True)
+    rating = models.FloatField(default=0) 
 
 class WorldBorder(models.Model):
 
@@ -34,6 +35,14 @@ class WorldBorder(models.Model):
 
     def __str__(self):
         return self.name
+
+    # Add a Many-to-Many relationship to store favorite restaurants
+    User.add_to_class(
+        'favorite_restaurants', 
+        models.ManyToManyField(Restaurant, related_name='favorited_by')
+    )
+
+
 
 
 

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH', r'C:\Users\patri\anaconda3\anaconda\envs\awm_env\Library\bin\gdal.dll')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +28,7 @@ SECRET_KEY = 'django-insecure-+j6x&*5k8r=dvdmez8fee3ei4q!v*x98si)v_0g(t^jyi*n1^$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['']
 
 
 # Application definition
@@ -41,7 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'restaurants'
+    'restaurants',
+    'pwa',
+    'rest_framework',
+
+
 ]
 
 MIDDLEWARE = [
@@ -52,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'restaurant_finder.urls'
@@ -126,9 +132,106 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Allow All Hosts (for Heroku)
+ALLOWED_HOSTS = ['*']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configure PWA settings
+PWA_APP_NAME = 'WebMap'
+PWA_APP_DESCRIPTION = "A Progressive Web Application for WebMap"
+PWA_APP_THEME_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_START_URL = '/'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/icons/icon-72x72.png',
+        'sizes': '72x72',
+    },
+    {
+        'src': '/static/images/icons/icon-96x96.png',
+        'sizes': '96x96',
+    },
+    {
+        'src': '/static/images/icons/icon-128x128.png',
+        'sizes': '128x128',
+    },
+    {
+        'src': '/static/images/icons/icon-144x144.png',
+        'sizes': '144x144',
+    },
+    {
+        'src': '/static/images/icons/icon-152x152.png',
+        'sizes': '152x152',
+    },
+    {
+        'src': '/static/images/icons/icon-192x192.png',
+        'sizes': '192x192',
+    },
+    {
+        'src': '/static/images/icons/icon-384x384.png',
+        'sizes': '384x384',
+    },
+    {
+        'src': '/static/images/icons/icon-512x512.png',
+        'sizes': '512x512',
+    },
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/images/icons/icon-152x152.png',
+        'sizes': '152x152',
+    },
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/images/icons/splash-640x1136.png',
+        'media': '(device-width: 320px) and (device-height: 568px)',
+    },
+    {
+        'src': '/static/images/icons/splash-750x1334.png',
+        'media': '(device-width: 375px) and (device-height: 667px)',
+    },
+    {
+        'src': '/static/images/icons/splash-828x1792.png',
+        'media': '(device-width: 414px) and (device-height: 896px)',
+    },
+    {
+        'src': '/static/images/icons/splash-1125x2436.png',
+        'media': '(device-width: 375px) and (device-height: 812px)',
+    },
+    {
+        'src': '/static/images/icons/splash-1242x2208.png',
+        'media': '(device-width: 414px) and (device-height: 736px)',
+    },
+    {
+        'src': '/static/images/icons/splash-1242x2688.png',
+        'media': '(device-width: 414px) and (device-height: 896px)',
+    },
+    {
+        'src': '/static/images/icons/splash-1536x2048.png',
+        'media': '(device-width: 768px) and (device-height: 1024px)',
+    },
+    {
+        'src': '/static/images/icons/splash-1668x2224.png',
+        'media': '(device-width: 834px) and (device-height: 1112px)',
+    },
+    {
+        'src': '/static/images/icons/splash-1668x2388.png',
+        'media': '(device-width: 834px) and (device-height: 1194px)',
+    },
+    {
+        'src': '/static/images/icons/splash-2048x2732.png',
+        'media': '(device-width: 1024px) and (device-height: 1366px)',
+    },
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
