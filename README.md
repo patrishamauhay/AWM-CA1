@@ -5,7 +5,7 @@ TU857/4
 02/01/2025
 
 Restaurant Finder
-Location Based Service (LBS) Application to locate restaurants nearby.
+Full Base Location-Based Service (LBS) Application to locate restaurants nearby.
 
 Features/ Views:
 - Search bar/form for entering restaurant name.
@@ -19,7 +19,7 @@ Technologies used:
 - Middle Tier: Django with Django Rest Framework
 - Front-end: Progressive Web Application (PWA) with Bootstrap framwork.
 - Mapping Leaflet JS with Open Street Map
-- Cloud Deployment: Heroku
+- Cloud Deployment: Heroku (https://awmrestaurantfinder.herokuapp.com/)
 - External API: OpenStreetMap's Overpass API (Populates database with different kinds of restaurants)
 
 

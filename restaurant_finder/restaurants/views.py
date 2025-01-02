@@ -57,11 +57,9 @@ def map_view(request):
     else:
         restaurants = Restaurant.objects.all()
 
-    # Set a default location for the map center, or use the first restaurant's location if available
-    initial_location = restaurants.first()  # Use .first() to avoid IndexError when there are no restaurants
+    initial_location = restaurants.first()
     initial_location = initial_location if initial_location else {'latitude': 0, 'longitude': 0}
 
-     # Generate random ratings between 1 and 5
     random_ratings = {restaurant.id: random.randint(1, 5) for restaurant in restaurants}
 
     return render(request, 'index.html', {
@@ -75,8 +73,8 @@ def map_view(request):
 class CustomLoginView(LoginView):
     def get_success_url(self):
         if self.request.user.is_superuser:
-            return '/admin/'  # Redirect to admin panel if the user is an admin
-        return '/'  # Redirect to the homepage or restaurant map for regular users
+            return '/admin/'
+        return '/' 
 
 
 class RestaurantList(APIView):

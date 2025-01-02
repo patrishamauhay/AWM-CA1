@@ -3,7 +3,6 @@ const urlsToCache = [
   '/',
   '/static/css/styles.css',
   '/static/js/scripts.js',
-  // Add other URLs to cache
 ];
 
 self.addEventListener('install', event => {
